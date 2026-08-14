@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository, ILike, DeleteResult } from 'typeorm';
 import { Projetos } from '../entities/projetos.entity';
@@ -50,6 +50,20 @@ export class ProjetosService {
   async delete(id: number): Promise<DeleteResult> {
     await this.findById(id)
     return await this.projetosRepository.delete(id)
+  }
+
+  async addImageToProject(id: number, imageUrl: string): Promise<Projetos> {
+    // 1. Busca o projeto
+    const projeto = await this.projetosRepository.findOne({ where: { id } });
+    
+    if (!projeto) {
+      throw new NotFoundException('Projeto não encontrado');
+    }
+    // 2. Garante que o array existe e adiciona a nova URL
+    const imagensAtuais = projeto.images || [];
+    projeto.images = [...imagensAtuais, imageUrl];
+    // 3. Salva no banco de dados e retorna o projeto atualizado
+    return await this.projetosRepository.save(projeto);
   }
 
 }
