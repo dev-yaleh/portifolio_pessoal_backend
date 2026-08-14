@@ -84,4 +84,35 @@ export class ProjetosController {
     return this.projetosService.addImageToProject(id, imageUrl);
   }
 
+
+  @Post(':id/video')
+  @ApiConsumes('multipart/form-data')
+  @ApiBody({                          // 2. Cria o campo no formulário do Swagger
+    schema: {
+      type: 'object',
+      properties: {
+        file: {
+          type: 'string',
+          format: 'binary',
+        },
+      },
+    },
+  })
+  @UseInterceptors(FileInterceptor('file')) // 'file' é o nome do campo que o frontend vai enviar
+  async uploadProjectVideo(
+    @Param('id', ParseIntPipe) id: number,
+    @UploadedFile() file: Express.Multer.File,
+  ) {
+    if (!file) {
+      throw new BadRequestException('Nenhum arquivo enviado.');
+    }
+    // 1. Envia para o Cloudinary
+    const result = await this.cloudinaryService.uploadFile(file);
+    
+    // 2. A URL pública do vídeo fica no result.secure_url
+    const videoUrl = result.secure_url;
+    // 3. Atualiza o projeto no banco de dados
+    return this.projetosService.addVideoToProject(id, videoUrl);
+  }
+
 }

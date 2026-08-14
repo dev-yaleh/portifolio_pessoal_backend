@@ -11,7 +11,7 @@ export class CloudinaryService {
   ): Promise<UploadApiResponse | UploadApiErrorResponse> {
     return new Promise((resolve, reject) => {
       const uploadStream = cloudinary.uploader.upload_stream(
-        { folder: 'portfolio' }, // Opcional: cria uma pasta no Cloudinary para organizar
+        { folder: 'portfolio', resource_type: 'auto' }, // Opcional: cria uma pasta no Cloudinary para organizar
         (error, result) => {
           if (error) return reject(error);
 

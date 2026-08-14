@@ -66,4 +66,18 @@ export class ProjetosService {
     return await this.projetosRepository.save(projeto);
   }
 
+    async addVideoToProject(id: number, videoUrl: string): Promise<Projetos> {
+    const projeto = await this.projetosRepository.findOne({ where: { id } });
+    
+    if (!projeto) {
+      throw new NotFoundException('Projeto não encontrado');
+    }
+
+    // A única diferença é que mexemos na propriedade .videos
+    const videosAtuais = projeto.videos || [];
+    projeto.videos = [...videosAtuais, videoUrl];
+
+    return await this.projetosRepository.save(projeto);
+  }
+
 }
