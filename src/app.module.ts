@@ -5,10 +5,18 @@ import { CategoriaModule } from './categorias/categorias.module';
 import { ProjetosModule } from './projetos/projetos.module';
 import { AuthModule } from './auth/auth.module';
 import { AppController } from './app.controller';
+import { ThrottlerGuard, ThrottlerModule } from '@nestjs/throttler';
 
 @Module({
   imports: [
     ConfigModule.forRoot({ isGlobal: true }),
+
+    ThrottlerModule.forRoot([
+      {
+        ttl: 60000, // janela de tempo: 60.000ms = 1 minuto
+        limit: 100, // limite GERAL da aplicação: 100 requisições por minuto por IP
+      },
+    ]),
 
     TypeOrmModule.forRootAsync({
       imports: [ConfigModule],
@@ -29,7 +37,12 @@ import { AppController } from './app.controller';
     AuthModule,
   ],
   controllers: [AppController],
-  providers: [],
+  providers: [
+    {
+      provide: 'APP_GUARD',
+      useClass: ThrottlerGuard, // ← aplica o Throttler em toda a aplicação
+    },
+  ],
 })
 export class AppModule {}
 
