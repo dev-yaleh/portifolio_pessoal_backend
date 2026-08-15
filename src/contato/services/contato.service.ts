@@ -20,7 +20,7 @@ export class ContatoService {
       nome: contato.nome,
       email: contato.email,
       mensagem: contato.mensagem,
-      emailEnviado: false,
+      emailEnviado: false as boolean, // ← força o tipo boolean
     });
 
     const transporter = nodemailer.createTransport({

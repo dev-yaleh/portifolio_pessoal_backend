@@ -24,7 +24,7 @@ export class Mensagem {
   lida: boolean;
 
   @ApiProperty()
-  @Column({ default: false })
+  @Column({ type: 'boolean', default: false })
   emailEnviado: boolean;
 
   @ApiProperty()
