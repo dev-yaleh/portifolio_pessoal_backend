@@ -3,7 +3,7 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { Repository, ILike, DeleteResult } from 'typeorm';
 import { Projetos } from '../entities/projetos.entity';
 import { HttpException, HttpStatus } from '@nestjs/common';
-
+import { FindProjetosQueryDto } from '../dto/find-projetos-query.dto';
 
 @Injectable()
 export class ProjetosService {
@@ -24,6 +24,10 @@ export class ProjetosService {
     if (!projeto) 
       throw new HttpException('Projeto não encontrado', HttpStatus.NOT_FOUND);
     
+    // Incrementa a visualização sem precisar recarregar a entidade inteira
+    await this.projetosRepository.increment({ id }, 'views', 1);
+    projeto.views += 1; // reflete o incremento na resposta atual, sem nova consulta
+
     return projeto;
   }
 
@@ -66,7 +70,7 @@ export class ProjetosService {
     return await this.projetosRepository.save(projeto);
   }
 
-    async addVideoToProject(id: number, videoUrl: string): Promise<Projetos> {
+  async addVideoToProject(id: number, videoUrl: string): Promise<Projetos> {
     const projeto = await this.projetosRepository.findOne({ where: { id } });
     
     if (!projeto) {
@@ -79,5 +83,44 @@ export class ProjetosService {
 
     return await this.projetosRepository.save(projeto);
   }
+
+  async findAllPaginated(query: FindProjetosQueryDto) {
+    const { categoriaId, featured, tech, page = 1, limit = 9 } = query;
+
+  const qb = this.projetosRepository
+    .createQueryBuilder('projeto')
+    .leftJoinAndSelect('projeto.categoria', 'categoria');
+
+  if (categoriaId) {
+    qb.andWhere('categoria.id = :categoriaId', { categoriaId });
+  }
+
+  if (featured !== undefined) {
+    qb.andWhere('projeto.featured = :featured', { featured: featured === 'true' });
+  }
+
+  if (tech) {
+    // techs é uma coluna JSON — JSON_CONTAINS verifica se o array contém o valor
+    qb.andWhere('JSON_CONTAINS(projeto.techs, :tech)', {
+      tech: JSON.stringify(tech),
+    });
+  }
+
+  qb.orderBy('projeto.order', 'ASC')
+    .addOrderBy('projeto.createdAt', 'DESC')
+    .skip((page - 1) * limit)
+    .take(limit);
+
+  const [dados, total] = await qb.getManyAndCount();
+
+  return {
+    dados,
+    total,
+    page,
+    limit,
+    totalPages: Math.ceil(total / limit),
+  };
+}
+  
 
 }

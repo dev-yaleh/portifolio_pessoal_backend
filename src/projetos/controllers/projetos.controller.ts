@@ -1,4 +1,4 @@
-import { BadRequestException, Body, Controller, Delete, Get, HttpCode, HttpStatus, Post, Put, UploadedFile, UseGuards, UseInterceptors } from '@nestjs/common';
+import { BadRequestException, Body, Controller, Delete, Get, HttpCode, HttpStatus, Post, Put, Query, UploadedFile, UseGuards, UseInterceptors } from '@nestjs/common';
 import { Projetos } from '../entities/projetos.entity';
 import { ProjetosService } from '../services/projetos.service';
 import { Param, ParseIntPipe } from '@nestjs/common';
@@ -8,6 +8,7 @@ import { CloudinaryService } from '../../upload/cloudinary/services/cloudinary.s
 import { FileInterceptor } from '@nestjs/platform-express';
 import type { Express } from 'express';
 import 'multer';
+import { FindProjetosQueryDto } from '../dto/find-projetos-query.dto';
 
 @ApiTags('Projetos')
 @Controller('/projetos')
@@ -15,10 +16,11 @@ import 'multer';
 export class ProjetosController {
   constructor(private readonly projetosService: ProjetosService, private readonly cloudinaryService: CloudinaryService) {}
 
+  //paginação
   @Get()
   @HttpCode(HttpStatus.OK)
-  async findAll(): Promise<Projetos[]> {
-    return this.projetosService.findAll();
+  async findAll(@Query() query: FindProjetosQueryDto) {
+    return await this.projetosService.findAllPaginated(query);
   }
 
   @Get('/:id')
