@@ -6,6 +6,8 @@ import { ProjetosModule } from './projetos/projetos.module';
 import { AuthModule } from './auth/auth.module';
 import { AppController } from './app.controller';
 import { ThrottlerGuard, ThrottlerModule } from '@nestjs/throttler';
+import { APP_GUARD } from '@nestjs/core';
+import { ContatoModule } from './contato/contato.module';
 
 @Module({
   imports: [
@@ -29,17 +31,19 @@ import { ThrottlerGuard, ThrottlerModule } from '@nestjs/throttler';
         password: config.get<string>('DB_PASSWORD', 'root'),
         database: config.get<string>('DB_NAME', 'db_portifolio_pessoal'),
         autoLoadEntities: true, // ← carrega todas as Entities automaticamente
-        synchronize: true,
+        migrations: [__dirname + '/migrations/*{.ts,.js}'],
+        synchronize: false, //← agora o schema é controlado por migrations
       }),
     }),
     CategoriaModule,
     ProjetosModule,
     AuthModule,
+    ContatoModule,
   ],
   controllers: [AppController],
   providers: [
     {
-      provide: 'APP_GUARD',
+      provide: APP_GUARD,
       useClass: ThrottlerGuard, // ← aplica o Throttler em toda a aplicação
     },
   ],
