@@ -5,10 +5,20 @@ import { CategoriaModule } from './categorias/categorias.module';
 import { ProjetosModule } from './projetos/projetos.module';
 import { AuthModule } from './auth/auth.module';
 import { AppController } from './app.controller';
+import { ThrottlerGuard, ThrottlerModule } from '@nestjs/throttler';
+import { APP_GUARD } from '@nestjs/core';
+import { ContatoModule } from './contato/contato.module';
 
 @Module({
   imports: [
     ConfigModule.forRoot({ isGlobal: true }),
+
+    ThrottlerModule.forRoot([
+      {
+        ttl: 60000, // janela de tempo: 60.000ms = 1 minuto
+        limit: 100, // limite GERAL da aplicação: 100 requisições por minuto por IP
+      },
+    ]),
 
     TypeOrmModule.forRootAsync({
       imports: [ConfigModule],
@@ -21,15 +31,22 @@ import { AppController } from './app.controller';
         password: config.get<string>('DB_PASSWORD', 'root'),
         database: config.get<string>('DB_NAME', 'db_portifolio_pessoal'),
         autoLoadEntities: true, // ← carrega todas as Entities automaticamente
-        synchronize: true,
+        migrations: [__dirname + '/migrations/*{.ts,.js}'],
+        synchronize: false, //← agora o schema é controlado por migrations
       }),
     }),
     CategoriaModule,
     ProjetosModule,
     AuthModule,
+    ContatoModule,
   ],
   controllers: [AppController],
-  providers: [],
+  providers: [
+    {
+      provide: APP_GUARD,
+      useClass: ThrottlerGuard, // ← aplica o Throttler em toda a aplicação
+    },
+  ],
 })
 export class AppModule {}
 

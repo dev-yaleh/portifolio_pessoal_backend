@@ -55,8 +55,13 @@ export class Projetos {
   @ApiProperty()
   @Column({ default: 0 })
   order: number;
+  
+  //contador de visualizações
+  @ApiProperty()
+  @Column({ default: 0 })
+  views: number;
 
-    // ← NOVO: lado ManyToOne do relacionamento
+  // ← NOVO: lado ManyToOne do relacionamento
   @ApiProperty({ type: () => Categoria })
   @ManyToOne(() => Categoria, (categoria) => categoria.projetos, {
     nullable: true,
@@ -71,4 +76,5 @@ export class Projetos {
   @ApiProperty()  
   @UpdateDateColumn({ name: 'data_atualizacao' })
   updatedAt: Date;
+
 }

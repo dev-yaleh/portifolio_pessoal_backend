@@ -1,0 +1,40 @@
+version: '3.8'
+
+services:
+  # Nossa caixa 1: O Banco de Dados
+  db:
+    image: mysql:8.0
+    restart: always
+    environment:
+      MYSQL_ROOT_PASSWORD: root
+      MYSQL_DATABASE: portfolio
+    ports:
+      - "3307:3306" # (Isso mapeia a porta 3306 lá de dentro para a 3307 do seu PC)
+
+    volumes:
+      - db_data:/var/lib/mysql # Salva os dados permanentemente (para não perder ao reiniciar)
+
+  # Nossa caixa 2: A API NestJS
+  api:
+    build: . # Manda o Docker ler nosso Dockerfile
+    restart: always
+    ports:
+      - "4000:4000" # Mapeia a porta 4000 do seu PC para a porta 4000 do container
+    environment:
+      # Aqui nós sobrescrevemos o seu arquivo .env
+      # Note que no DB_HOST usamos o nome do serviço (db) em vez de localhost
+      DB_HOST: db 
+      DB_PORT: 3306
+      DB_USERNAME: root
+      DB_PASSWORD: root
+      DB_NAME: portfolio
+      JWT_SECRET: sua_chave_secreta
+      JWT_EXPIRES_IN: 1d
+      CLOUDINARY_CLOUD_NAME: eeju7cwx
+      CLOUDINARY_API_KEY: 399983547999935
+      CLOUDINARY_API_SECRET: seu_secret_aqui
+    depends_on:
+      - db # Diz ao Docker: "só levante a API depois que o banco estiver pronto"
+
+volumes:
+  db_data:
