@@ -8,6 +8,7 @@ import { AppController } from './app.controller';
 import { ThrottlerGuard, ThrottlerModule } from '@nestjs/throttler';
 import { APP_GUARD } from '@nestjs/core';
 import { ContatoModule } from './contato/contato.module';
+import { ProdService } from './data/services/prod.service';
 
 @Module({
   imports: [
@@ -21,19 +22,8 @@ import { ContatoModule } from './contato/contato.module';
     ]),
 
     TypeOrmModule.forRootAsync({
+      useClass:ProdService, // ← aqui você escolhe qual serviço usar (DevService ou ProdService)
       imports: [ConfigModule],
-      inject: [ConfigService],
-      useFactory: (config: ConfigService) => ({
-        type: 'mysql',
-        host: config.get<string>('DB_HOST', 'localhost'),
-        port: config.get<number>('DB_PORT', 3306),
-        username: config.get<string>('DB_USERNAME', 'root'),
-        password: config.get<string>('DB_PASSWORD', 'root'),
-        database: config.get<string>('DB_NAME', 'db_portifolio_pessoal'),
-        autoLoadEntities: true, // ← carrega todas as Entities automaticamente
-        migrations: [__dirname + '/migrations/*{.ts,.js}'],
-        synchronize: false, //← agora o schema é controlado por migrations
-      }),
     }),
     CategoriaModule,
     ProjetosModule,
