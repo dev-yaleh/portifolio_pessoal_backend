@@ -23,7 +23,7 @@ import { DevService } from './data/services/dev.service';
     ]),
 
     TypeOrmModule.forRootAsync({
-      useClass:DevService, // ← aqui você escolhe qual serviço usar (DevService ou ProdService)
+      useClass:ProdService, // ← aqui você escolhe qual serviço usar (DevService ou ProdService)
       imports: [ConfigModule],
     }),
     CategoriaModule,
