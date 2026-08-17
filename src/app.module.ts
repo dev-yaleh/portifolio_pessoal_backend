@@ -9,6 +9,7 @@ import { ThrottlerGuard, ThrottlerModule } from '@nestjs/throttler';
 import { APP_GUARD } from '@nestjs/core';
 import { ContatoModule } from './contato/contato.module';
 import { ProdService } from './data/services/prod.service';
+import { DevService } from './data/services/dev.service';
 
 @Module({
   imports: [
@@ -22,7 +23,7 @@ import { ProdService } from './data/services/prod.service';
     ]),
 
     TypeOrmModule.forRootAsync({
-      useClass:ProdService, // ← aqui você escolhe qual serviço usar (DevService ou ProdService)
+      useClass:DevService, // ← aqui você escolhe qual serviço usar (DevService ou ProdService)
       imports: [ConfigModule],
     }),
     CategoriaModule,

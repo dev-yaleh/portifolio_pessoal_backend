@@ -1,4 +1,4 @@
-import { Body, Controller, HttpCode, HttpStatus, Post, UseGuards } from "@nestjs/common";
+import { Body, Controller, Get, HttpCode, HttpStatus, Post, UseGuards } from "@nestjs/common";
 import { LocalAuthGuard } from "../guard/local-auth.guard";
 import { AuthService } from "../services/auth.service";
 import { AdminLogin } from "../entities/adminlogin.entity";
@@ -18,4 +18,6 @@ export class AuthController {
   login(@Body() admin: AdminLogin): Promise<any> {
     return this.authService.login(admin)
   }
+
 }
+

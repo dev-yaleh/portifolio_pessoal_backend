@@ -27,12 +27,10 @@ export class Projetos {
   description: string;
   
   @ApiProperty()
-  @IsNotEmpty()
   @Column({ type: 'json', nullable: false })
   techs: string[];
 
   @ApiProperty()
-  @IsNotEmpty()
   @Column({ type: 'json', nullable: false })
   images: string[];
 
