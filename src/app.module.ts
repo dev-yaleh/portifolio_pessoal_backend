@@ -10,6 +10,7 @@ import { APP_GUARD } from '@nestjs/core';
 import { ContatoModule } from './contato/contato.module';
 import { ProdService } from './data/services/prod.service';
 import { DevService } from './data/services/dev.service';
+import { GithubStatsModule } from './github-stats/github-stats.module';
 
 @Module({
   imports: [
@@ -30,6 +31,7 @@ import { DevService } from './data/services/dev.service';
     ProjetosModule,
     AuthModule,
     ContatoModule,
+    GithubStatsModule,
   ],
   controllers: [AppController],
   providers: [
