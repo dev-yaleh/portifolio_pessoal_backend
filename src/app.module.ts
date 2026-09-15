@@ -32,7 +32,7 @@ import { GithubStatsModule } from './github-stats/github-stats.module';
     AuthModule,
     ContatoModule,
     GithubStatsModule,
-  ],
+  ], 
   controllers: [AppController],
   providers: [
     {
