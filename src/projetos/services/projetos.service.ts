@@ -64,18 +64,14 @@ export class ProjetosService {
       throw new NotFoundException('Projeto não encontrado');
     }
     
-    console.log('ANTES:', projeto?.images)
-    
     // 2. Garante que o array existe e adiciona a nova URL
     const imagensAtuais = projeto.images || [];
     projeto.images = [...imagensAtuais, imageUrl];
 
-    console.log('URL NOVA:', imageUrl)
     
     // 3. Salva no banco de dados e retorna o projeto atualizado
     return await this.projetosRepository.save(projeto);
 
-    console.log('DEPOIS:', projeto?.images)
   }
 
   async addVideoToProject(id: number, videoUrl: string): Promise<Projetos> {
