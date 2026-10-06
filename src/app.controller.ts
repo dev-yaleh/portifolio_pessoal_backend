@@ -6,7 +6,6 @@ import { DataSource } from 'typeorm';
 export class AppController {
   constructor(private readonly dataSource: DataSource) {}
 
-  @ApiExcludeEndpoint()
   @Get('health')
   async health() {
     await this.dataSource.query('SELECT 1');
